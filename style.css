@@ -40,7 +40,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    width: 100vw;
+    width: 100%;
     background: linear-gradient(90deg, var(--primary-dark), var(--primary), var(--accent));
     color: white;
     padding: 10px 0;
@@ -54,7 +54,7 @@ body {
     animation: scrollBanner 25s linear infinite;
     font-weight: 700;
     font-size: 0.95rem;
-    padding-right: 100vw;
+    padding-right: 50%;
 }
 
 @keyframes scrollBanner {

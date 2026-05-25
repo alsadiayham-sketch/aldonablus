@@ -183,7 +183,7 @@ function renderProductsTable() {
     }
 
     tbody.innerHTML = products.map(function (product) {
-        return '<tr><td><input type="checkbox" class="product-select" value="' + product.id + '" onchange="updateBulkBar()"></td><td><img src="' + product.image + '" alt="' + product.name + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'"></td><td>' + product.name + '</td><td>' + product.brand + '</td><td>' + product.category + '</td><td>' + formatSizes(product) + '</td><td>' + formatPrices(product) + '</td><td>' + (product.discount ? product.discount + '%' : '-') + '</td><td><span class="status-tag ' + (product.status || 'normal') + '">' + statusLabels[product.status || 'normal'] + '</span></td><td class="actions"><button class="btn-edit" onclick="editProduct(' + product.id + ')">تعديل</button><button class="btn-delete" onclick="deleteProduct(' + product.id + ')">حذف</button></td></tr>';
+        return '<tr><td><input type="checkbox" class="product-select" value="' + product.docId + '" onchange="updateBulkBar()"></td><td><img src="' + product.image + '" alt="' + product.name + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'"></td><td>' + product.name + '</td><td>' + product.brand + '</td><td>' + product.category + '</td><td>' + formatSizes(product) + '</td><td>' + formatPrices(product) + '</td><td>' + (product.discount ? product.discount + '%' : '-') + '</td><td><span class="status-tag ' + (product.status || 'normal') + '">' + statusLabels[product.status || 'normal'] + '</span></td><td class="actions"><button class="btn-edit" onclick="editProduct(\'' + product.docId + '\')">تعديل</button><button class="btn-delete" onclick="deleteProduct(\'' + product.docId + '\')">حذف</button></td></tr>';
     }).join('');
     updateBulkBar();
 }
@@ -192,7 +192,7 @@ function getSelectedProductIds() {
     var checkboxes = document.querySelectorAll('.product-select:checked');
     var ids = [];
     for (var i = 0; i < checkboxes.length; i++) {
-        ids.push(Number(checkboxes[i].value));
+        ids.push(checkboxes[i].value);
     }
     return ids;
 }
@@ -222,9 +222,8 @@ async function bulkChangeStatus() {
     var status = document.getElementById('bulkStatusSelect').value;
     if (!ids.length || !status) return;
     var batch = db.batch();
-    ids.forEach(function (id) {
-        var product = products.find(function (p) { return p.id === id; });
-        if (product) batch.update(db.collection('products').doc(product.docId || String(id)), { status: status });
+    ids.forEach(function (docId) {
+        batch.update(db.collection('products').doc(docId), { status: status });
     });
     await batch.commit();
     document.getElementById('bulkStatusSelect').value = '';
@@ -235,9 +234,8 @@ async function bulkApplyDiscount() {
     var discount = parseInt(document.getElementById('bulkDiscountInput').value, 10);
     if (!ids.length || isNaN(discount) || discount < 0 || discount > 99) return;
     var batch = db.batch();
-    ids.forEach(function (id) {
-        var product = products.find(function (p) { return p.id === id; });
-        if (product) batch.update(db.collection('products').doc(product.docId || String(id)), { discount: discount });
+    ids.forEach(function (docId) {
+        batch.update(db.collection('products').doc(docId), { discount: discount });
     });
     await batch.commit();
     document.getElementById('bulkDiscountInput').value = '';
@@ -248,9 +246,8 @@ async function bulkDeleteProducts() {
     if (!ids.length) return;
     if (!confirm('هل تريد حذف ' + ids.length + ' منتج؟')) return;
     var batch = db.batch();
-    ids.forEach(function (id) {
-        var product = products.find(function (p) { return p.id === id; });
-        if (product) batch.delete(db.collection('products').doc(product.docId || String(id)));
+    ids.forEach(function (docId) {
+        batch.delete(db.collection('products').doc(docId));
     });
     await batch.commit();
     var selectAll = document.getElementById('selectAllProducts');
@@ -293,7 +290,7 @@ function renderSizeRows(sizes) {
 
 function openProductModal(product) {
     document.getElementById('productModalTitle').textContent = product ? 'تعديل المنتج' : 'إضافة منتج جديد';
-    document.getElementById('productId').value = product ? product.id : '';
+    document.getElementById('productId').value = product ? product.docId : '';
     document.getElementById('productName').value = product ? product.name : '';
     document.getElementById('productBrand').value = product ? product.brand : '';
     document.getElementById('productCategory').value = product ? product.category : '';
@@ -308,8 +305,8 @@ function openProductModal(product) {
     document.getElementById('productModal').style.display = 'flex';
 }
 
-function editProduct(id) {
-    var product = products.find(function (entry) { return entry.id === id; });
+function editProduct(docId) {
+    var product = products.find(function (entry) { return entry.docId === docId; });
     if (product) openProductModal(product);
 }
 
@@ -325,11 +322,11 @@ function collectSizes() {
 
 async function saveProduct(event) {
     event.preventDefault();
-    var id = document.getElementById('productId').value;
+    var docId = document.getElementById('productId').value;
     var sizes = collectSizes();
     if (!sizes.length) return alert('أضيفي حجماً واحداً على الأقل مع السعر.');
 
-    var nextId = id ? parseInt(id, 10) : (products.length ? Math.max.apply(null, products.map(function (entry) { return entry.id; })) + 1 : 1);
+    var nextId = docId ? (function() { var p = products.find(function(e) { return e.docId === docId; }); return p ? p.id : Date.now(); })() : Date.now();
 
     // Handle image upload
     var imageUrl = document.getElementById('productImage').value.trim();
@@ -351,8 +348,7 @@ async function saveProduct(event) {
         status: document.getElementById('productStatus').value
     });
 
-    var existingProduct = id ? products.find(function (p) { return p.id === parseInt(id, 10); }) : null;
-    var docKey = existingProduct && existingProduct.docId ? existingProduct.docId : String(productData.id);
+    var docKey = docId || ('product_' + Date.now());
 
     setAdminLoading(true);
     await db.collection('products').doc(docKey).set(productData, { merge: false });
@@ -361,12 +357,10 @@ async function saveProduct(event) {
     setAdminStatus('تم حفظ المنتج بنجاح.', 'success');
 }
 
-async function deleteProduct(id) {
+async function deleteProduct(docId) {
     if (!confirm('هل أنتِ متأكدة من حذف هذا المنتج؟')) return;
-    var product = products.find(function (p) { return p.id === id; });
-    if (!product) return;
     setAdminLoading(true);
-    await db.collection('products').doc(product.docId || String(id)).delete();
+    await db.collection('products').doc(docId).delete();
     setAdminLoading(false);
     setAdminStatus('تم حذف المنتج.', 'success');
 }

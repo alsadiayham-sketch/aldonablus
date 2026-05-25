@@ -117,7 +117,7 @@ function subscribeToCollections() {
     unsubscribers = [];
 
     unsubscribers.push(db.collection('products').onSnapshot(function (snapshot) {
-        products = snapshot.docs.map(function (docSnap) { return normalizeProduct(docSnap.data()); }).sort(function (a, b) { return a.id - b.id; });
+        products = snapshot.docs.map(function (docSnap) { var p = normalizeProduct(docSnap.data()); p.docId = docSnap.id; return p; }).sort(function (a, b) { return a.id - b.id; });
         adminReady.products = true;
         renderProductsTable();
         renderDiscountValueOptions();
@@ -223,7 +223,8 @@ async function bulkChangeStatus() {
     if (!ids.length || !status) return;
     var batch = db.batch();
     ids.forEach(function (id) {
-        batch.update(db.collection('products').doc(String(id)), { status: status });
+        var product = products.find(function (p) { return p.id === id; });
+        if (product) batch.update(db.collection('products').doc(product.docId || String(id)), { status: status });
     });
     await batch.commit();
     document.getElementById('bulkStatusSelect').value = '';
@@ -235,7 +236,8 @@ async function bulkApplyDiscount() {
     if (!ids.length || isNaN(discount) || discount < 0 || discount > 99) return;
     var batch = db.batch();
     ids.forEach(function (id) {
-        batch.update(db.collection('products').doc(String(id)), { discount: discount });
+        var product = products.find(function (p) { return p.id === id; });
+        if (product) batch.update(db.collection('products').doc(product.docId || String(id)), { discount: discount });
     });
     await batch.commit();
     document.getElementById('bulkDiscountInput').value = '';
@@ -247,7 +249,8 @@ async function bulkDeleteProducts() {
     if (!confirm('هل تريد حذف ' + ids.length + ' منتج؟')) return;
     var batch = db.batch();
     ids.forEach(function (id) {
-        batch.delete(db.collection('products').doc(String(id)));
+        var product = products.find(function (p) { return p.id === id; });
+        if (product) batch.delete(db.collection('products').doc(product.docId || String(id)));
     });
     await batch.commit();
     var selectAll = document.getElementById('selectAllProducts');
@@ -348,8 +351,11 @@ async function saveProduct(event) {
         status: document.getElementById('productStatus').value
     });
 
+    var existingProduct = id ? products.find(function (p) { return p.id === parseInt(id, 10); }) : null;
+    var docKey = existingProduct && existingProduct.docId ? existingProduct.docId : String(productData.id);
+
     setAdminLoading(true);
-    await db.collection('products').doc(String(productData.id)).set(productData, { merge: false });
+    await db.collection('products').doc(docKey).set(productData, { merge: false });
     setAdminLoading(false);
     closeModal('productModal');
     setAdminStatus('تم حفظ المنتج بنجاح.', 'success');
@@ -357,8 +363,10 @@ async function saveProduct(event) {
 
 async function deleteProduct(id) {
     if (!confirm('هل أنتِ متأكدة من حذف هذا المنتج؟')) return;
+    var product = products.find(function (p) { return p.id === id; });
+    if (!product) return;
     setAdminLoading(true);
-    await db.collection('products').doc(String(id)).delete();
+    await db.collection('products').doc(product.docId || String(id)).delete();
     setAdminLoading(false);
     setAdminStatus('تم حذف المنتج.', 'success');
 }

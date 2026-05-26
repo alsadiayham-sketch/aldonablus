@@ -22,13 +22,13 @@ function normalizeSizeEntry(entry) {
     };
 }
 
-function normalizeProduct(product) {
+function normalizeProduct(product, docId) {
     var sizes = Array.isArray(product && product.sizes) && product.sizes.length
         ? product.sizes.map(normalizeSizeEntry)
         : [normalizeSizeEntry({ size: product && product.size, unit: product && product.unit, price: product && product.price })];
 
     return {
-        id: Number(product && product.id) || Date.now(),
+        id: docId || (product && product.id) || String(Date.now() + Math.random()).replace('.', ''),
         name: (product && product.name) || '',
         brand: (product && product.brand) || '',
         category: (product && product.category) || '',
@@ -40,7 +40,7 @@ function normalizeProduct(product) {
 }
 
 function normalizeProducts(list) {
-    return (Array.isArray(list) ? list : []).map(normalizeProduct).sort(function (a, b) { return a.id - b.id; });
+    return (Array.isArray(list) ? list : []).map(function(p) { return normalizeProduct(p); }).sort(function (a, b) { return a.id < b.id ? -1 : 1; });
 }
 
 function normalizeDiscount(discount) {
@@ -144,12 +144,13 @@ function getFinalPrice(product, sizeIdx, discounts) {
 function normalizeCartItems(cartItems, productsList) {
     var safeProducts = Array.isArray(productsList) ? productsList : normalizeProducts(DEFAULT_PRODUCTS);
     return (Array.isArray(cartItems) ? cartItems : []).map(function (item) {
-        var product = safeProducts.find(function (entry) { return entry.id === Number(item.id || item.productId); });
+        var itemId = String(item.id || item.productId || '');
+        var product = safeProducts.find(function (entry) { return String(entry.id) === itemId; });
         var maxSizeIndex = product && product.sizes.length ? product.sizes.length - 1 : 0;
         var requestedSize = Number.isInteger(item.sizeIdx) ? item.sizeIdx : parseInt(item.sizeIdx || 0, 10) || 0;
         var sizeIdx = Math.max(0, Math.min(requestedSize, maxSizeIndex));
         return {
-            id: Number(item.id || item.productId),
+            id: itemId,
             sizeIdx: sizeIdx,
             qty: Math.max(1, parseInt(item.qty || 1, 10) || 1),
             price: Number(item.price) || (product ? getSizeData(product, sizeIdx).price : 0)

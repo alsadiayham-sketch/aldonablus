@@ -153,6 +153,7 @@ function syncCartWithProducts() {
 function renderStorefront() {
     applySettings();
     renderFilters();
+    renderBrands();
     checkDiscountBanner();
     updateCartBadge();
     renderProducts(getFilteredProducts(currentFilter));
@@ -340,8 +341,37 @@ function renderFilters() {
 function renderBrands() {
     var grid = document.getElementById('brandsGrid');
     if (!grid) return;
-    grid.innerHTML = BRANDS_DATA.map(function (brand) {
-        return '<img src="' + brand.logo + '" alt="' + brand.name + '" class="brand-logo" title="' + brand.name + '" onerror="this.style.display=\'none\'">';
+    // Dynamically extract brands from loaded products
+    var brandMap = {};
+    products.forEach(function (p) {
+        if (!p.brand) return;
+        if (!brandMap[p.brand]) brandMap[p.brand] = { name: p.brand, count: 0, image: '' };
+        brandMap[p.brand].count++;
+        if (!brandMap[p.brand].image && p.image) brandMap[p.brand].image = p.image;
+    });
+    var brandList = Object.keys(brandMap).map(function (k) { return brandMap[k]; });
+    if (brandList.length === 0) {
+        grid.innerHTML = '<p style="color:#999;text-align:center;">لا توجد ماركات حالياً</p>';
+        return;
+    }
+    // Gold accent palette for brand cards
+    var accents = ['#c9a96e', '#b8860b', '#d4a855', '#a0845c', '#c4943a', '#8b7355'];
+    grid.innerHTML = brandList.map(function (brand, i) {
+        var accent = accents[i % accents.length];
+        var initial = brand.name.charAt(0).toUpperCase();
+        return '<div class="brand-card" onclick="filterProducts(\'' + brand.name.replace(/'/g, "\\'") + '\')" style="--brand-accent:' + accent + '">' +
+            '<div class="brand-card-visual">' +
+                (brand.image
+                    ? '<img src="' + brand.image + '" alt="' + brand.name + '" class="brand-card-img" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+                    : '') +
+                '<div class="brand-card-initial"' + (brand.image ? ' style="display:none"' : '') + '>' + initial + '</div>' +
+            '</div>' +
+            '<div class="brand-card-info">' +
+                '<h3 class="brand-card-name">' + brand.name + '</h3>' +
+                '<span class="brand-card-count">' + brand.count + ' منتج</span>' +
+            '</div>' +
+            '<div class="brand-card-arrow">←</div>' +
+        '</div>';
     }).join('');
 }
 

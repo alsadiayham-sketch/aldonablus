@@ -396,10 +396,21 @@ function setupSearch(inputId, dropdownId) {
         } else {
             dropdown.innerHTML = results.map(function (product) {
                 var pricing = getFinalPrice(product, 0, discounts);
-                return '<div class="search-item" onclick="scrollToProduct(\'' + product.id + '\')"><img src="' + product.image + '" alt="' + product.name + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'"><div class="search-item-info"><h4>' + product.name + '</h4><span>' + product.brand + ' • ' + product.category + ' • ' + getSizeLabel(getSizeData(product, 0)) + ' • ' + formatCurrency(pricing.final) + '</span></div></div>';
+                return '<div class="search-item" onclick="openPDP(\'' + product.id + '\'); closeSearchDropdowns();"><img src="' + product.image + '" alt="' + product.name + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'"><div class="search-item-info"><h4>' + product.name + '</h4><span>' + product.brand + ' • ' + product.category + ' • ' + getSizeLabel(getSizeData(product, 0)) + ' • ' + formatCurrency(pricing.final) + '</span></div></div>';
             }).join('');
         }
         dropdown.classList.add('active');
+    });
+
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            var query = this.value.trim();
+            if (query.length >= 2) {
+                showSearchResults(query);
+                dropdown.classList.remove('active');
+            }
+        }
     });
 
     document.addEventListener('click', function (event) {
@@ -407,15 +418,49 @@ function setupSearch(inputId, dropdownId) {
     });
 }
 
-function scrollToProduct(productId) {
-    filterProducts('all');
-    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+function closeSearchDropdowns() {
     document.querySelectorAll('.search-dropdown').forEach(function (dropdown) { dropdown.classList.remove('active'); });
     document.querySelectorAll('.nav-search input, .products-search input').forEach(function (input) { input.value = ''; });
-    setTimeout(function () {
-        var card = document.querySelector('.product-card[data-product-id="' + productId + '"]');
-        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 150);
+}
+
+function showSearchResults(query) {
+    var results = products.filter(function (product) {
+        return product.name.indexOf(query) >= 0 || product.category.indexOf(query) >= 0 || product.brand.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+    });
+
+    var section = document.getElementById('searchResultsSection');
+    var grid = document.getElementById('searchResultsGrid');
+    var countEl = document.getElementById('searchResultsCount');
+    var queryEl = document.getElementById('searchResultsQuery');
+
+    queryEl.textContent = '"' + query + '"';
+    countEl.textContent = results.length > 0 ? results.length + ' منتج' : 'لا توجد نتائج';
+
+    if (results.length === 0) {
+        grid.innerHTML = '<div class="no-results-message"><p>لم نجد منتجات تطابق بحثك</p><p>جربي كلمات أخرى</p></div>';
+    } else {
+        grid.innerHTML = results.map(function (product) {
+            var pricing = getFinalPrice(product, 0, discounts);
+            var badges = '';
+            if (product.status === 'bestseller') badges += '<span class="badge bestseller">الأكثر مبيعاً</span>';
+            if (product.status === 'special') badges += '<span class="badge special">مميز</span>';
+            if (product.status === 'soldout') badges += '<span class="badge soldout">نفذت</span>';
+            if (pricing.hasDiscount) badges += '<span class="badge discount">' + pricing.discountPercent + '%-</span>';
+            return '<div class="product-card" onclick="openPDP(\'' + product.id + '\')">' +
+                '<div class="product-image"><img src="' + product.image + '" alt="' + product.name + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'"></div>' +
+                '<div class="product-badges">' + badges + '</div>' +
+                '<div class="product-info"><h3>' + product.name + '</h3><p class="product-brand">' + product.brand + '</p>' +
+                '<div class="product-price">' + (pricing.hasDiscount ? '<span class="original-price">' + formatCurrency(pricing.original) + '</span>' : '') + '<span class="final-price">' + formatCurrency(pricing.final) + '</span></div></div></div>';
+        }).join('');
+    }
+
+    section.style.display = 'block';
+    section.scrollIntoView({ behavior: 'smooth' });
+    closeSearchDropdowns();
+}
+
+function closeSearchResults() {
+    document.getElementById('searchResultsSection').style.display = 'none';
 }
 
 function toggleMobileMenu() {

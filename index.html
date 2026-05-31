@@ -101,6 +101,17 @@
         </div>
     </section>
 
+    <section class="search-results-section" id="searchResultsSection" style="display:none;">
+        <div class="container">
+            <div class="search-results-header">
+                <h2 class="section-title">نتائج البحث: <span id="searchResultsQuery"></span></h2>
+                <button class="search-back-btn" onclick="closeSearchResults()">✕ إغلاق</button>
+            </div>
+            <div class="search-results-count" id="searchResultsCount"></div>
+            <div class="products-grid" id="searchResultsGrid"></div>
+        </div>
+    </section>
+
     <section class="products-section">
         <div class="container products-shell">
             <div class="store-loading" id="storeLoading">

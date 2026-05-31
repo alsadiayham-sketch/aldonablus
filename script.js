@@ -151,13 +151,13 @@ function syncCartWithProducts() {
 }
 
 function renderStorefront() {
-    applySettings();
-    renderFilters();
-    renderBrands();
-    checkDiscountBanner();
-    updateCartBadge();
-    renderProducts(getFilteredProducts(currentFilter));
-    updateCheckoutLink(updateCartTotal());
+    try { applySettings(); } catch (e) { console.error('applySettings error:', e); }
+    try { renderFilters(); } catch (e) { console.error('renderFilters error:', e); }
+    try { renderBrands(); } catch (e) { console.error('renderBrands error:', e); }
+    try { checkDiscountBanner(); } catch (e) { console.error('checkDiscountBanner error:', e); }
+    try { updateCartBadge(); } catch (e) { console.error('updateCartBadge error:', e); }
+    try { renderProducts(getFilteredProducts(currentFilter)); } catch (e) { console.error('renderProducts error:', e); }
+    try { updateCheckoutLink(updateCartTotal()); } catch (e) { console.error('updateCheckoutLink error:', e); }
     if (!usedFallbackData) setStoreMessage('', 'info');
 }
 

@@ -789,6 +789,8 @@ body.has-banner .mobile-menu { top: 102px; }
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 .delivery-card {

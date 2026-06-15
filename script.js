@@ -157,6 +157,7 @@ function renderStorefront() {
     try { checkDiscountBanner(); } catch (e) { console.error('checkDiscountBanner error:', e); }
     try { updateCartBadge(); } catch (e) { console.error('updateCartBadge error:', e); }
     try { renderProducts(getFilteredProducts(currentFilter)); } catch (e) { console.error('renderProducts error:', e); }
+    try { populateCategoryCircles(); } catch (e) { console.error('populateCategoryCircles error:', e); }
     try { updateCheckoutLink(updateCartTotal()); } catch (e) { console.error('updateCheckoutLink error:', e); }
     if (!usedFallbackData) setStoreMessage('', 'info');
 }
@@ -219,12 +220,67 @@ function getFilteredProducts(filter) {
     }
 
     if (filter !== 'all') {
+        // Map filter keywords to search terms (English + Arabic)
+        var filterKeywords = {
+            'black': ['black', 'أسود', 'سوداء', 'سود'],
+            'white': ['white', 'أبيض', 'بيضاء', 'بيض', 'bone', 'cream'],
+            'clutch': ['clutch', 'كلتش', 'محفظة'],
+            'crossbody': ['crossbody', 'cross body', 'كروس', 'كروسبودي'],
+            'tote': ['tote', 'توت', 'حقيبة كبيرة'],
+            'shoulder': ['shoulder', 'كتف', 'شولدر']
+        };
+
+        var keywords = filterKeywords[filter] || [filter.toLowerCase()];
+
         return products.filter(function (product) {
-            return product.category === filter || product.brand === filter;
+            if (product.category === filter || product.brand === filter) return true;
+            var name = (product.name || '').toLowerCase();
+            var category = (product.category || '').toLowerCase();
+            for (var i = 0; i < keywords.length; i++) {
+                if (name.indexOf(keywords[i]) >= 0 || category.indexOf(keywords[i]) >= 0) return true;
+            }
+            return false;
         });
     }
 
     return products.slice();
+}
+
+function populateCategoryCircles() {
+    var filterKeywords = {
+        'all': null,
+        'black': ['black', 'أسود', 'سوداء', 'سود'],
+        'white': ['white', 'أبيض', 'بيضاء', 'بيض', 'bone', 'cream'],
+        'clutch': ['clutch', 'كلتش', 'محفظة'],
+        'crossbody': ['crossbody', 'cross body', 'كروس', 'كروسبودي'],
+        'tote': ['tote', 'توت', 'حقيبة كبيرة'],
+        'shoulder': ['shoulder', 'كتف', 'شولدر'],
+        'bestseller': null
+    };
+
+    Object.keys(filterKeywords).forEach(function(filter) {
+        var el = document.getElementById('catImg-' + filter);
+        if (!el) return;
+        var product = null;
+        if (filter === 'all' && products.length) {
+            product = products[0];
+        } else if (filter === 'bestseller') {
+            product = products.find(function(p) { return p.status === 'bestseller'; }) || products[products.length - 1];
+        } else {
+            var keywords = filterKeywords[filter] || [];
+            product = products.find(function(p) {
+                var name = (p.name || '').toLowerCase();
+                var category = (p.category || '').toLowerCase();
+                for (var i = 0; i < keywords.length; i++) {
+                    if (name.indexOf(keywords[i]) >= 0 || category.indexOf(keywords[i]) >= 0) return true;
+                }
+                return false;
+            });
+        }
+        if (product && product.image) {
+            el.innerHTML = '<img src="' + product.image + '" alt="' + filter + '" onerror="this.parentElement.style.background=\'#f0f0f0\'">';
+        }
+    });
 }
 
 function getPriceHTML(pricing) {
@@ -298,7 +354,7 @@ function getStatusBadge(status) {
 
 function filterProducts(filter) {
     currentFilter = filter;
-    document.querySelectorAll('.filter-btn').forEach(function (button) {
+    document.querySelectorAll('.filter-btn, .category-circle').forEach(function (button) {
         button.classList.remove('active');
     });
     var activeBtn = document.querySelector('[data-filter="' + filter + '"]');

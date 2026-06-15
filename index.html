@@ -1,28 +1,30 @@
-﻿<!DOCTYPE html>
-<!-- Deployed via GitHub Actions -->
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
     <title>ALDO Nablus | ألدو نابلس</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="logo.png">
 </head>
 <body>
+    <!-- Discount Banner -->
     <div class="discount-banner" id="discountBanner" style="display:none;">
         <div class="banner-scroll">
             <span id="bannerText"></span>
         </div>
     </div>
 
+    <!-- Navbar -->
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
             <a href="#" class="logo">
                 <img src="logo.png" alt="Aldo Nablus" class="logo-img" id="logoImg">
-                <span id="logoText" class="logo-text">Aldo Nablus</span>
+                <span id="logoText" class="logo-text">ALDO Nablus</span>
             </a>
             <div class="nav-search">
                 <input type="text" id="navSearchInput" placeholder="ابحثي عن منتج..." autocomplete="off">
@@ -42,6 +44,7 @@
         </div>
     </nav>
 
+    <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <a href="#products" onclick="toggleMobileMenu()">المنتجات</a>
         <a href="#about" onclick="toggleMobileMenu()">من نحن</a>
@@ -49,44 +52,63 @@
         <a href="#contact" onclick="toggleMobileMenu()">تواصلي معنا</a>
     </div>
 
-    <section class="hero">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <div class="hero-logo">
-                <img src="logo.png" id="heroLogo" alt="Aldo Nablus" class="hero-logo-img">
+    <!-- Collection Banner -->
+    <section class="collection-banner">
+        <div class="collection-banner-inner">
+            <div class="collection-banner-image">
+                <img src="hero-bg.png" alt="حقائب ألدو">
             </div>
-            <h1 id="heroTitle" style="display:none;">Classic Store | كلاسيك ستور</h1>
-            <p class="hero-subtitle" id="heroSubtitle">حقائب وإكسسوارات ماستر كوبي بأعلى جودة</p>
-            <p class="hero-tagline">لمسة فخامة يومية مع توصيل إلى الضفة والقدس والداخل</p>
-            <a href="#products" class="btn-primary">تسوقي الآن</a>
-        </div>
-        <!-- Mobile-only hero display -->
-        <div class="mobile-hero">
-            <div class="mobile-hero-brand">ALDO</div>
-            <div class="mobile-hero-line"></div>
-            <div class="mobile-hero-sub">NABLUS</div>
-            <div class="mobile-hero-products">
-                <div class="mobile-product-circle">👜</div>
-                <div class="mobile-product-circle">👛</div>
+            <div class="collection-banner-text">
+                <h1 class="collection-title" id="heroTitle">حقائب يد</h1>
+                <p class="collection-description" id="heroSubtitle">من حقائب الكروس بودي المميزة إلى حقائب التوت الواسعة، اكتشفي أحدث التصاميم العصرية بأعلى جودة مع توصيل لجميع المناطق.</p>
             </div>
-            <p class="mobile-hero-tagline">حقائب وإكسسوارات بأعلى جودة</p>
-            <a href="#products" class="btn-primary mobile-hero-btn">تسوقي الآن</a>
         </div>
     </section>
 
+    <!-- Filter Bar + Products -->
     <section id="products" class="filter-section">
         <div class="container">
-            <h2 class="section-title">منتجاتنا</h2>
             <p class="store-notice" id="storeNotice" style="display:none;"></p>
             <div class="products-search">
                 <input type="text" id="productsSearchInput" placeholder="ابحثي عن منتج، ماركة، أو فئة..." autocomplete="off">
                 <div class="search-dropdown" id="productsSearchDropdown"></div>
             </div>
             <div class="filter-toggle-bar">
-                <button class="filter-btn active" data-filter="all" onclick="filterProducts('all')">الكل</button>
-                <button class="filter-btn status-btn" data-filter="special" onclick="filterProducts('special')">مميز</button>
-                <button class="filter-btn status-btn" data-filter="bestseller" onclick="filterProducts('bestseller')">الأكثر مبيعاً</button>
-                <button class="filter-toggle-btn" onclick="toggleFilters()">فلتر ▼</button>
+                <div class="category-circles" id="categoryCircles">
+                    <button class="category-circle active" data-filter="all" onclick="filterProducts('all')">
+                        <div class="category-circle-img" id="catImg-all"></div>
+                        <span>الكل</span>
+                    </button>
+                    <button class="category-circle" data-filter="black" onclick="filterProducts('black')">
+                        <div class="category-circle-img" id="catImg-black"></div>
+                        <span>حقائب سوداء</span>
+                    </button>
+                    <button class="category-circle" data-filter="white" onclick="filterProducts('white')">
+                        <div class="category-circle-img" id="catImg-white"></div>
+                        <span>حقائب بيضاء</span>
+                    </button>
+                    <button class="category-circle" data-filter="clutch" onclick="filterProducts('clutch')">
+                        <div class="category-circle-img" id="catImg-clutch"></div>
+                        <span>كلتش</span>
+                    </button>
+                    <button class="category-circle" data-filter="crossbody" onclick="filterProducts('crossbody')">
+                        <div class="category-circle-img" id="catImg-crossbody"></div>
+                        <span>كروس بودي</span>
+                    </button>
+                    <button class="category-circle" data-filter="tote" onclick="filterProducts('tote')">
+                        <div class="category-circle-img" id="catImg-tote"></div>
+                        <span>توت</span>
+                    </button>
+                    <button class="category-circle" data-filter="shoulder" onclick="filterProducts('shoulder')">
+                        <div class="category-circle-img" id="catImg-shoulder"></div>
+                        <span>كتف</span>
+                    </button>
+                    <button class="category-circle" data-filter="bestseller" onclick="filterProducts('bestseller')">
+                        <div class="category-circle-img" id="catImg-bestseller"></div>
+                        <span>الأكثر مبيعاً</span>
+                    </button>
+                </div>
+                <button class="filter-toggle-btn" onclick="toggleFilters()">المزيد ▼</button>
             </div>
             <div class="filter-panel" id="filterPanel" style="display:none;">
                 <div class="filter-group">
@@ -101,6 +123,7 @@
         </div>
     </section>
 
+    <!-- Search Results -->
     <section class="search-results-section" id="searchResultsSection" style="display:none;">
         <div class="container">
             <div class="search-results-header">
@@ -112,19 +135,21 @@
         </div>
     </section>
 
+    <!-- Products Grid -->
     <section class="products-section">
         <div class="container products-shell">
             <div class="store-loading" id="storeLoading">
                 <div class="spinner"></div>
-                <p>جاري تحميل تشكيلتنا الفاخرة...</p>
+                <p>جاري تحميل المنتجات...</p>
             </div>
             <div class="products-grid" id="productsGrid"></div>
         </div>
     </section>
 
+    <!-- About -->
     <section id="about" class="about-section">
         <div class="container">
-            <h2 class="section-title">💫 من نحن</h2>
+            <h2 class="section-title">من نحن</h2>
             <div class="about-content">
                 <div class="about-text">
                     <p id="aboutText">شنط الدو الأصلية 👜<br>موديلات أنيقة وعصرية<br>نابلس - جامعة النجاح (الحرم القديم) 📍<br>خدمة التوصيل متاحة لجميع المناطق</p>
@@ -140,6 +165,7 @@
         </div>
     </section>
 
+    <!-- Brands -->
     <section class="brands-section">
         <div class="container">
             <h2 class="section-title">ماركاتنا</h2>
@@ -147,9 +173,10 @@
         </div>
     </section>
 
+    <!-- Delivery -->
     <section id="delivery" class="delivery-section">
         <div class="container">
-            <h2 class="section-title">🚚 مناطق التوصيل</h2>
+            <h2 class="section-title">مناطق التوصيل</h2>
             <div class="delivery-grid">
                 <div class="delivery-card"><span class="delivery-icon">🚗</span><h3>الضفة</h3><p>₪20 لجميع المدن والبلدات</p></div>
                 <div class="delivery-card"><span class="delivery-icon">🏙️</span><h3>القدس</h3><p>₪30 مع خدمة توصيل سريعة</p></div>
@@ -158,17 +185,19 @@
         </div>
     </section>
 
+    <!-- Contact -->
     <section id="contact" class="contact-section">
         <div class="container">
-            <h2 class="section-title">📱 تواصلي معنا</h2>
-            <p class="section-subtitle">للطلب أو الاستفسار 💬</p>
+            <h2 class="section-title">تواصلي معنا</h2>
+            <p class="section-subtitle">للطلب أو الاستفسار</p>
             <div class="social-links">
-                <a href="https://wa.me/972569236758" class="social-btn whatsapp" target="_blank" id="whatsappLink"><span>📱 WhatsApp</span></a>
-                <a href="https://www.instagram.com/aldonablus/" class="social-btn instagram" target="_blank" id="instagramLink"><span>📸 Instagram</span></a>
+                <a href="https://wa.me/972569236758" class="social-btn whatsapp" target="_blank" id="whatsappLink"><span>WhatsApp</span></a>
+                <a href="https://www.instagram.com/aldonablus/" class="social-btn instagram" target="_blank" id="instagramLink"><span>Instagram</span></a>
             </div>
         </div>
     </section>
 
+    <!-- PDP Modal -->
     <div class="modal-overlay pdp-overlay" id="pdpModal" style="display:none;" onclick="closePDP(event)">
         <div class="pdp-modal" onclick="event.stopPropagation()">
             <button class="pdp-close" onclick="closePDP()">✕</button>
@@ -197,6 +226,7 @@
         </div>
     </div>
 
+    <!-- Cart -->
     <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
@@ -215,6 +245,7 @@
 
     <div id="flyingProduct" class="flying-product" style="display:none;"></div>
 
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <p>© 2026 Aldo Nablus. جميع الحقوق محفوظة</p>

@@ -473,9 +473,61 @@ async function deleteDiscount(id) {
 function loadSettingsForm() {
     document.getElementById('settingWhatsappNumber').value = siteSettings.whatsappNumber || '';
     document.getElementById('settingHero').value = siteSettings.heroSubtitle || '';
+    document.getElementById('settingHeroImage').value = siteSettings.heroImage || '';
     document.getElementById('settingAbout').value = siteSettings.aboutText || '';
     document.getElementById('settingInstagram').value = siteSettings.instagramLink || '';
     document.getElementById('settingTiktok').value = siteSettings.tiktokLink || '';
+    var preview = document.getElementById('heroImagePreview');
+    if (preview && siteSettings.heroImage) {
+        preview.src = siteSettings.heroImage;
+        preview.style.display = 'block';
+    }
+}
+
+var IMGBB_API_KEY = 'de10f7f874d9dbf904fe0cd0ad00332d';
+
+function previewHeroImage(url) {
+    var preview = document.getElementById('heroImagePreview');
+    if (!preview) return;
+    if (url && url.match(/^https?:\/\/.+/)) {
+        preview.src = url;
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+async function uploadHeroImage(input) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    var status = document.getElementById('heroImageUploadStatus');
+    var preview = document.getElementById('heroImagePreview');
+    var urlInput = document.getElementById('settingHeroImage');
+    status.textContent = 'جاري الرفع...';
+    try {
+        var formData = new FormData();
+        formData.append('image', file);
+        var response = await fetch('https://api.imgbb.com/1/upload?key=' + IMGBB_API_KEY, {
+            method: 'POST',
+            body: formData
+        });
+        var result = await response.json();
+        if (result.success) {
+            var imageUrl = result.data.url;
+            urlInput.value = imageUrl;
+            preview.src = imageUrl;
+            preview.style.display = 'block';
+            status.textContent = 'تم الرفع بنجاح ✓';
+            status.style.color = '#25d366';
+        } else {
+            status.textContent = 'فشل الرفع';
+            status.style.color = '#dc2626';
+        }
+    } catch (e) {
+        status.textContent = 'خطأ: ' + e.message;
+        status.style.color = '#dc2626';
+    }
+    input.value = '';
 }
 
 async function saveSettingsForm(event) {
@@ -483,6 +535,7 @@ async function saveSettingsForm(event) {
     siteSettings = normalizeSettings({
         whatsappNumber: document.getElementById('settingWhatsappNumber').value,
         heroSubtitle: document.getElementById('settingHero').value,
+        heroImage: document.getElementById('settingHeroImage').value,
         aboutText: document.getElementById('settingAbout').value,
         instagramLink: document.getElementById('settingInstagram').value,
         tiktokLink: document.getElementById('settingTiktok').value

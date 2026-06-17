@@ -117,6 +117,18 @@
             <form class="settings-form" onsubmit="saveSettingsForm(event)">
                 <div class="form-group"><label>رقم WhatsApp</label><input type="text" id="settingWhatsappNumber" placeholder="9725xxxxxxxx"></div>
                 <div class="form-group"><label>الوصف الرئيسي (Hero)</label><input type="text" id="settingHero" placeholder="أول و أكبر متجر..."></div>
+                <div class="form-group">
+                    <label>صورة البانر</label>
+                    <input type="url" id="settingHeroImage" placeholder="رابط الصورة (اختياري)" oninput="previewHeroImage(this.value)">
+                    <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+                        <label class="btn-upload" style="cursor:pointer; padding:8px 16px; background:#000; color:#fff; font-size:0.82rem; display:inline-block;">
+                            رفع صورة
+                            <input type="file" id="settingHeroImageFile" accept="image/*" style="display:none;" onchange="uploadHeroImage(this)">
+                        </label>
+                        <span id="heroImageUploadStatus" style="font-size:0.8rem; color:rgba(0,0,0,0.5);"></span>
+                    </div>
+                    <img id="heroImagePreview" src="" alt="" style="margin-top:10px; max-width:100%; max-height:200px; display:none; border:1px solid rgba(0,0,0,0.12);">
+                </div>
                 <div class="form-group"><label>نص من نحن</label><textarea id="settingAbout" rows="4"></textarea></div>
                 <div class="form-group"><label>رابط Instagram</label><input type="url" id="settingInstagram" placeholder="https://instagram.com/..."></div>
                 <div class="form-group"><label>رابط TikTok</label><input type="url" id="settingTiktok" placeholder="https://tiktok.com/..."></div>

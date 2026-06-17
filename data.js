@@ -5,7 +5,8 @@ var DEFAULT_DISCOUNTS = [];
 var DEFAULT_SITE_SETTINGS = {
     whatsappNumber: '972569236758',
     heroSubtitle: 'شنط الدو الأصلية - موديلات أنيقة وعصرية',
-    aboutText: 'شنط الدو الأصلية 👜\nموديلات أنيقة وعصرية\nنابلس - جامعة النجاح (الحرم القديم) 📍\nخدمة التوصيل متاحة لجميع المناطق',
+    heroImage: '',
+    aboutText: 'شنط الدو الأصلية\nموديلات أنيقة وعصرية\nنابلس - جامعة النجاح (الحرم القديم)\nخدمة التوصيل متاحة لجميع المناطق',
     instagramLink: 'https://www.instagram.com/aldonablus/',
     tiktokLink: ''
 };
@@ -83,6 +84,7 @@ function normalizeSettings(settings) {
     return {
         whatsappNumber: extractWhatsappNumber(source.whatsappNumber || source.whatsappLink || DEFAULT_SITE_SETTINGS.whatsappNumber),
         heroSubtitle: String(source.heroSubtitle || DEFAULT_SITE_SETTINGS.heroSubtitle),
+        heroImage: String(source.heroImage || DEFAULT_SITE_SETTINGS.heroImage),
         aboutText: String(source.aboutText || DEFAULT_SITE_SETTINGS.aboutText),
         instagramLink: String(source.instagramLink || DEFAULT_SITE_SETTINGS.instagramLink),
         tiktokLink: String(source.tiktokLink || DEFAULT_SITE_SETTINGS.tiktokLink)

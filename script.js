@@ -166,6 +166,11 @@ function applySettings() {
     var heroSub = document.getElementById('heroSubtitle');
     if (heroSub) heroSub.textContent = siteSettings.heroSubtitle;
 
+    var bannerImage = document.getElementById('bannerImage');
+    if (bannerImage && siteSettings.heroImage) {
+        bannerImage.src = siteSettings.heroImage;
+    }
+
     var aboutText = document.getElementById('aboutText');
     if (aboutText) aboutText.innerHTML = siteSettings.aboutText.replace(/\n/g, '<br>');
 

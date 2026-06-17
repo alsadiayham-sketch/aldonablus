@@ -1735,6 +1735,24 @@ body:not(.has-banner) .mobile-menu {
         gap: 6px;
     }
 
+    .category-circles {
+        gap: 16px;
+    }
+
+    .category-circle {
+        min-width: 70px;
+        gap: 8px;
+    }
+
+    .category-circle-img {
+        width: 64px;
+        height: 64px;
+    }
+
+    .category-circle span {
+        font-size: 0.65rem;
+    }
+
     .filter-btn,
     .filter-toggle-btn {
         flex: 1 1 calc(50% - 6px);
@@ -1872,6 +1890,24 @@ body:not(.has-banner) .mobile-menu {
 
     .filter-section {
         padding-bottom: 14px;
+    }
+
+    .category-circles {
+        gap: 12px;
+    }
+
+    .category-circle {
+        min-width: 60px;
+        gap: 6px;
+    }
+
+    .category-circle-img {
+        width: 56px;
+        height: 56px;
+    }
+
+    .category-circle span {
+        font-size: 0.6rem;
     }
 
     .search-item {

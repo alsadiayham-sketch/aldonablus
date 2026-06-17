@@ -279,11 +279,13 @@ body.has-banner .navbar {
 .logo-text {
     display: inline-flex;
     align-items: center;
-    font-size: 0.94rem;
-    font-weight: 500;
+    font-family: var(--font-heading-family);
+    font-size: 1.8rem;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.15rem;
     white-space: nowrap;
-    color: rgba(var(--color-foreground), 0.8);
+    color: #000;
 }
 
 .nav-search,
@@ -1717,7 +1719,7 @@ body:not(.has-banner) .mobile-menu {
     }
 
     .logo-text {
-        display: none;
+        font-size: 1.4rem;
     }
 
     .nav-search input {

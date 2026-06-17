@@ -225,26 +225,8 @@ function getFilteredProducts(filter) {
     }
 
     if (filter !== 'all') {
-        // Map filter keywords to search terms (English + Arabic)
-        var filterKeywords = {
-            'black': ['black', 'أسود', 'سوداء', 'سود'],
-            'white': ['white', 'أبيض', 'بيضاء', 'بيض', 'bone', 'cream'],
-            'clutch': ['clutch', 'كلتش', 'محفظة'],
-            'crossbody': ['crossbody', 'cross body', 'كروس', 'كروسبودي'],
-            'tote': ['tote', 'توت', 'حقيبة كبيرة'],
-            'shoulder': ['shoulder', 'كتف', 'شولدر']
-        };
-
-        var keywords = filterKeywords[filter] || [filter.toLowerCase()];
-
         return products.filter(function (product) {
-            if (product.category === filter || product.brand === filter) return true;
-            var name = (product.name || '').toLowerCase();
-            var category = (product.category || '').toLowerCase();
-            for (var i = 0; i < keywords.length; i++) {
-                if (name.indexOf(keywords[i]) >= 0 || category.indexOf(keywords[i]) >= 0) return true;
-            }
-            return false;
+            return product.category === filter || product.brand === filter;
         });
     }
 
@@ -252,40 +234,54 @@ function getFilteredProducts(filter) {
 }
 
 function populateCategoryCircles() {
-    var filterKeywords = {
-        'all': null,
-        'black': ['black', 'أسود', 'سوداء', 'سود'],
-        'white': ['white', 'أبيض', 'بيضاء', 'بيض', 'bone', 'cream'],
-        'clutch': ['clutch', 'كلتش', 'محفظة'],
-        'crossbody': ['crossbody', 'cross body', 'كروس', 'كروسبودي'],
-        'tote': ['tote', 'توت', 'حقيبة كبيرة'],
-        'shoulder': ['shoulder', 'كتف', 'شولدر'],
-        'bestseller': null
-    };
+    var container = document.getElementById('categoryCircles');
+    if (!container || !products.length) return;
+    container.innerHTML = '';
 
-    Object.keys(filterKeywords).forEach(function(filter) {
-        var el = document.getElementById('catImg-' + filter);
-        if (!el) return;
-        var product = null;
-        if (filter === 'all' && products.length) {
-            product = products[0];
-        } else if (filter === 'bestseller') {
-            product = products.find(function(p) { return p.status === 'bestseller'; }) || products[products.length - 1];
-        } else {
-            var keywords = filterKeywords[filter] || [];
-            product = products.find(function(p) {
-                var name = (p.name || '').toLowerCase();
-                var category = (p.category || '').toLowerCase();
-                for (var i = 0; i < keywords.length; i++) {
-                    if (name.indexOf(keywords[i]) >= 0 || category.indexOf(keywords[i]) >= 0) return true;
-                }
-                return false;
-            });
-        }
-        if (product && product.image) {
-            el.innerHTML = '<img src="' + product.image + '" alt="' + filter + '" onerror="this.parentElement.style.background=\'#f0f0f0\'">';
+    // Build "All" circle first
+    var allBtn = createCategoryCircle('all', 'الكل', products[0]);
+    allBtn.classList.add('active');
+    container.appendChild(allBtn);
+
+    // Get unique categories from products
+    var categories = [];
+    var seen = {};
+    products.forEach(function(p) {
+        var cat = (p.category || '').trim();
+        if (cat && !seen[cat]) {
+            seen[cat] = true;
+            categories.push(cat);
         }
     });
+
+    // Create a circle for each category
+    categories.forEach(function(cat) {
+        var product = products.find(function(p) { return p.category === cat; });
+        container.appendChild(createCategoryCircle(cat, cat, product));
+    });
+
+    // Add "bestseller" circle if any exist
+    var bestsellerProduct = products.find(function(p) { return p.status === 'bestseller'; });
+    if (bestsellerProduct) {
+        container.appendChild(createCategoryCircle('bestseller', 'الأكثر مبيعاً', bestsellerProduct));
+    }
+}
+
+function createCategoryCircle(filter, label, product) {
+    var btn = document.createElement('button');
+    btn.className = 'category-circle';
+    btn.dataset.filter = filter;
+    btn.onclick = function() { filterProducts(filter); };
+    var imgDiv = document.createElement('div');
+    imgDiv.className = 'category-circle-img';
+    if (product && product.image) {
+        imgDiv.innerHTML = '<img src="' + product.image + '" alt="' + label + '" onerror="this.parentElement.style.background=\'#f0f0f0\'">';
+    }
+    var span = document.createElement('span');
+    span.textContent = label;
+    btn.appendChild(imgDiv);
+    btn.appendChild(span);
+    return btn;
 }
 
 function getPriceHTML(pricing) {

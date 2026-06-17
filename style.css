@@ -44,6 +44,7 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -55,6 +56,8 @@ body {
     line-height: 1.5;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body.has-banner {
@@ -288,20 +291,27 @@ body.has-banner .navbar {
     color: #000;
 }
 
-.nav-search,
+.nav-search {
+    position: relative;
+    max-width: 280px;
+}
+
 .products-search {
     position: relative;
+    width: 100%;
 }
 
 .nav-search input,
 .products-search input {
     width: 100%;
-    min-height: 44px;
-    padding: 12px 16px;
+    max-width: 100%;
+    min-height: 36px;
+    padding: 8px 14px;
     background: var(--white);
     border: 1px solid var(--border-strong);
-    font-size: 0.88rem;
+    font-size: 0.82rem;
     color: var(--text);
+    box-sizing: border-box;
 }
 
 .nav-search input:hover,
@@ -428,6 +438,7 @@ body:not(.has-banner) .mobile-menu {
 .collection-banner {
     padding: 0;
     background: var(--bg-alt);
+    width: 100%;
 }
 
 .collection-banner-inner {
@@ -494,6 +505,9 @@ body:not(.has-banner) .mobile-menu {
 .filter-section .container {
     display: grid;
     gap: 14px;
+    width: calc(100% - 32px);
+    max-width: var(--container);
+    margin: 0 auto;
 }
 
 .store-notice {
@@ -519,17 +533,19 @@ body:not(.has-banner) .mobile-menu {
 
 .filter-toggle-bar {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 8px;
-    align-items: flex-end;
+    width: 100%;
 }
 
 .category-circles {
     display: flex;
-    gap: 24px;
-    overflow-x: auto;
+    gap: 16px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     padding-bottom: 8px;
-    flex: 1;
+    width: 100%;
     scrollbar-width: none;
 }
 
@@ -546,13 +562,14 @@ body:not(.has-banner) .mobile-menu {
     background: none;
     cursor: pointer;
     padding: 0;
-    min-width: 90px;
+    flex: 0 0 auto;
+    width: 80px;
     transition: var(--transition-fast);
 }
 
 .category-circle-img {
-    width: 90px;
-    height: 90px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid var(--border);
@@ -1732,28 +1749,32 @@ body:not(.has-banner) .mobile-menu {
     .products-search input {
         min-height: 42px;
         font-size: 0.82rem;
+        max-width: 100%;
     }
 
     .filter-toggle-bar {
         gap: 6px;
     }
 
+    .filter-section .container {
+        width: calc(100% - 16px);
+    }
+
     .category-circles {
-        gap: 16px;
+        gap: 14px;
     }
 
     .category-circle {
-        min-width: 70px;
-        gap: 8px;
+        width: 66px;
     }
 
     .category-circle-img {
-        width: 64px;
-        height: 64px;
+        width: 66px;
+        height: 66px;
     }
 
     .category-circle span {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
     }
 
     .filter-btn,
@@ -1895,22 +1916,25 @@ body:not(.has-banner) .mobile-menu {
         padding-bottom: 14px;
     }
 
+    .filter-section .container {
+        width: calc(100% - 20px);
+    }
+
     .category-circles {
         gap: 12px;
     }
 
     .category-circle {
-        min-width: 60px;
-        gap: 6px;
+        width: 62px;
     }
 
     .category-circle-img {
-        width: 56px;
-        height: 56px;
+        width: 62px;
+        height: 62px;
     }
 
     .category-circle span {
-        font-size: 0.6rem;
+        font-size: 0.55rem;
     }
 
     .search-item {

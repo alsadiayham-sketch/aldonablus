@@ -299,6 +299,8 @@ body.has-banner .navbar {
 .products-search {
     position: relative;
     width: 100%;
+    max-width: 480px;
+    box-sizing: border-box;
 }
 
 .nav-search input,
@@ -508,6 +510,8 @@ body:not(.has-banner) .mobile-menu {
     width: calc(100% - 32px);
     max-width: var(--container);
     margin: 0 auto;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .store-notice {
@@ -536,6 +540,8 @@ body:not(.has-banner) .mobile-menu {
     flex-direction: column;
     gap: 8px;
     width: 100%;
+    min-width: 0;
+    overflow: visible;
 }
 
 .category-circles {
@@ -546,6 +552,7 @@ body:not(.has-banner) .mobile-menu {
     -webkit-overflow-scrolling: touch;
     padding-bottom: 8px;
     width: 100%;
+    min-width: 0;
     scrollbar-width: none;
 }
 
@@ -1760,8 +1767,15 @@ body:not(.has-banner) .mobile-menu {
         width: calc(100% - 16px);
     }
 
+    .products-search {
+        max-width: 480px;
+    }
+
     .category-circles {
         gap: 14px;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .category-circle {
@@ -1920,8 +1934,15 @@ body:not(.has-banner) .mobile-menu {
         width: calc(100% - 20px);
     }
 
+    .products-search {
+        max-width: 480px;
+    }
+
     .category-circles {
         gap: 12px;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .category-circle {
